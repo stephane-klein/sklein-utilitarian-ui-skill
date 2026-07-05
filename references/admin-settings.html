@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings — Admin — AppName</title>
+  <style>
+    :root {
+      --bg:           #fff;
+      --bg-subtle:    #f7f7f7;
+      --border:       #ddd;
+      --text:         #1a1a1a;
+      --text-muted:   #666;
+      --link:         #0066cc;
+      --accent:       #0066cc;
+      --accent-hover: #0055bb;
+      --danger:       #cc0000;
+      --admin-bg:     #fffbf0;
+      --admin-border: #e8d9a0;
+      --font: system-ui, -apple-system, sans-serif;
+      --mono: ui-monospace, 'Cascadia Code', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font: 15px/1.6 var(--font);
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* ── Header app ── */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding: 9px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .site-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    nav a { font-size: 13px; color: var(--text-muted); text-decoration: none; }
+    nav a + a::before { content: ' · '; }
+    nav a:hover { color: var(--link); text-decoration: underline; }
+    nav a.active { color: var(--text); font-weight: 600; }
+
+    /* ── Bandeau admin ── */
+    .admin-bar {
+      background: var(--admin-bg);
+      border-bottom: 1px solid var(--admin-border);
+      padding: 6px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 12px;
+      color: #7a6500;
+    }
+
+    .admin-bar strong { font-weight: 700; }
+    .admin-bar nav a { font-size: 12px; color: #7a6500; text-decoration: none; }
+    .admin-bar nav a + a::before { content: ' · '; color: #c4aa40; }
+    .admin-bar nav a:hover { text-decoration: underline; }
+    .admin-bar nav a.active { font-weight: 700; }
+
+    /* ── Layout deux colonnes ── */
+    .page {
+      display: flex;
+      max-width: 1080px;
+      padding: 28px 20px 64px;
+      gap: 48px;
+      align-items: flex-start;
+    }
+
+    /* Sidebar de navigation des sections */
+    .settings-nav {
+      width: 180px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 20px;
+    }
+
+    .settings-nav a {
+      display: block;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 3px 0;
+    }
+
+    .settings-nav a:hover { color: var(--link); }
+    .settings-nav a.active { color: var(--text); font-weight: 600; }
+
+    .settings-nav .nav-group {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-muted);
+      margin: 16px 0 4px;
+    }
+
+    .settings-nav .nav-group:first-child { margin-top: 0; }
+
+    /* Contenu */
+    .settings-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    h1 {
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      margin-bottom: 28px;
+    }
+
+    /* ── Sections ── */
+    .section { margin-bottom: 40px; }
+
+    h2 {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-muted);
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    /* ── Setting rows ── */
+    .setting-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .setting-row:last-child { border-bottom: none; }
+
+    .setting-label { flex: 1; }
+
+    .setting-label strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .setting-label p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .setting-control {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Inputs ── */
+    input[type=text],
+    input[type=email],
+    input[type=number],
+    input[type=url],
+    select,
+    textarea {
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    input[type=number] { width: 80px; }
+    input[type=text], input[type=url] { width: 240px; }
+    select { min-width: 140px; }
+    textarea { width: 100%; min-height: 80px; resize: vertical; }
+
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: -1px;
+      border-color: var(--accent);
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .toggle input:checked + .toggle-track { background: var(--accent); }
+
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform .15s;
+    }
+
+    .toggle input:checked + .toggle-track::after { transform: translateX(16px); }
+
+    /* ── Buttons ── */
+    .btn {
+      padding: 5px 14px;
+      border-radius: 3px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border-color: var(--border);
+      font-weight: 400;
+    }
+
+    .btn-ghost:hover { background: var(--bg-subtle); color: var(--text); }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--danger);
+      border-color: #f5b8b8;
+    }
+
+    .btn-danger:hover { background: #fde8e8; }
+
+    /* ── Save bar ── */
+    .save-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .notice {
+      font-size: 13px;
+      color: #1a7f37;
+      display: none;
+    }
+
+    .notice.visible { display: inline; }
+
+    /* ── Code / clés ── */
+    .code-value {
+      font-family: var(--mono);
+      font-size: 13px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 4px 8px;
+      color: var(--text);
+      user-select: all;
+    }
+
+    /* ── Danger zone ── */
+    .danger-zone h2 {
+      color: var(--danger);
+      border-color: #f5b8b8;
+    }
+
+    .danger-zone .setting-label p { color: var(--text-muted); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 11px 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="/" class="site-name">AppName</a>
+    <nav>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/time">Time entries</a>
+      <a href="/settings">Settings</a>
+      <a href="/logout">Sign out</a>
+    </nav>
+  </header>
+
+  <div class="admin-bar">
+    <strong>Admin</strong>
+    <nav>
+      <a href="/admin">Overview</a>
+      <a href="/admin/users">Users</a>
+      <a href="/admin/activity">Activity log</a>
+      <a href="/admin/settings" class="active">Settings</a>
+    </nav>
+    <span style="margin-left:auto">
+      <a href="/" style="color:#7a6500">← Back to app</a>
+    </span>
+  </div>
+
+  <div class="page">
+
+    <!-- Navigation latérale des sections -->
+    <nav class="settings-nav">
+      <div class="nav-group">General</div>
+      <a href="#general" class="active">General</a>
+      <a href="#registrations">Registrations</a>
+      <a href="#email">Email</a>
+
+      <div class="nav-group">Integrations</div>
+      <a href="#toggl">Toggl</a>
+      <a href="#webhooks">Webhooks</a>
+      <a href="#api">API</a>
+
+      <div class="nav-group">System</div>
+      <a href="#security">Security</a>
+      <a href="#danger">Danger zone</a>
+    </nav>
+
+    <div class="settings-content">
+      <h1>Settings</h1>
+
+      <!-- General -->
+      <div class="section" id="general">
+        <h2>General</h2>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Application name</strong>
+            <p>Shown in the header and email subjects.</p>
+          </div>
+          <div class="setting-control">
+            <input type="text" value="AppName">
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Base URL</strong>
+            <p>Used to generate links in emails and webhooks.</p>
+          </div>
+          <div class="setting-control">
+            <input type="url" value="https://app.example.com">
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Timezone</strong>
+            <p>Default timezone for new users.</p>
+          </div>
+          <div class="setting-control">
+            <select>
+              <option>UTC</option>
+              <option selected>Europe/Paris</option>
+              <option>America/New_York</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="save-bar">
+          <button class="btn" onclick="saved(this)">Save</button>
+          <span class="notice" id="n-general">Saved.</span>
+        </div>
+      </div>
+
+      <!-- Registrations -->
+      <div class="section" id="registrations">
+        <h2>Registrations</h2>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Allow public sign-up</strong>
+            <p>Anyone can create an account without an invitation.</p>
+          </div>
+          <div class="setting-control">
+            <label class="toggle">
+              <input type="checkbox">
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Require email verification</strong>
+            <p>New accounts must verify their email before signing in.</p>
+          </div>
+          <div class="setting-control">
+            <label class="toggle">
+              <input type="checkbox" checked>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Allowed email domains</strong>
+            <p>Restrict sign-ups to these domains. Leave empty to allow all.</p>
+          </div>
+          <div class="setting-control">
+            <input type="text" value="example.com" placeholder="example.com, acme.org">
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Default role for new users</strong>
+          </div>
+          <div class="setting-control">
+            <select>
+              <option selected>Member</option>
+              <option>Admin</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="save-bar">
+          <button class="btn" onclick="saved(this)">Save</button>
+          <span class="notice" id="n-reg">Saved.</span>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="section" id="email">
+        <h2>Email</h2>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>SMTP host</strong>
+          </div>
+          <div class="setting-control">
+            <input type="text" value="smtp.example.com">
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>SMTP port</strong>
+          </div>
+          <div class="setting-control">
+            <input type="number" value="587">
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>From address</strong>
+          </div>
+          <div class="setting-control">
+            <input type="email" value="noreply@example.com" style="width:240px">
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>TLS</strong>
+          </div>
+          <div class="setting-control">
+            <label class="toggle">
+              <input type="checkbox" checked>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="save-bar">
+          <button class="btn" onclick="saved(this)">Save</button>
+          <button class="btn btn-ghost" onclick="alert('Test email sent — demo only')">Send test email</button>
+          <span class="notice" id="n-email">Saved.</span>
+        </div>
+      </div>
+
+      <!-- Toggl -->
+      <div class="section" id="toggl">
+        <h2>Toggl</h2>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>API token</strong>
+            <p>Found in your Toggl profile settings.</p>
+          </div>
+          <div class="setting-control">
+            <input type="text" value="••••••••••••••••••••••••••••••••" style="width:240px; font-family:var(--mono)">
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Workspace ID</strong>
+          </div>
+          <div class="setting-control">
+            <input type="text" value="1234567" style="width:120px">
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Sync frequency</strong>
+            <p>How often to pull new time entries from Toggl.</p>
+          </div>
+          <div class="setting-control">
+            <select>
+              <option>Every 5 minutes</option>
+              <option selected>Every 15 minutes</option>
+              <option>Every hour</option>
+              <option>Manual only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Last sync</strong>
+          </div>
+          <div class="setting-control" style="color:var(--text-muted); font-size:13px">
+            <span style="font-family:var(--mono)">2025-07-07 14:23:01</span>
+            &nbsp;·&nbsp;
+            <a href="#" style="font-size:13px" onclick="alert('Syncing — demo only'); return false">sync now</a>
+          </div>
+        </div>
+
+        <div class="save-bar">
+          <button class="btn" onclick="saved(this)">Save</button>
+          <span class="notice" id="n-toggl">Saved.</span>
+        </div>
+      </div>
+
+      <!-- API -->
+      <div class="section" id="api">
+        <h2>API</h2>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>API access</strong>
+            <p>Allow external tools to query the API.</p>
+          </div>
+          <div class="setting-control">
+            <label class="toggle">
+              <input type="checkbox" checked>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>API key</strong>
+            <p>Include as <code style="font-family:var(--mono);font-size:12px">Authorization: Bearer &lt;key&gt;</code></p>
+          </div>
+          <div class="setting-control" style="gap:6px">
+            <span class="code-value">sk_prod_xK9mN2pQr7vL</span>
+            <button class="btn btn-ghost" onclick="alert('New key generated — demo only')">Regenerate</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security -->
+      <div class="section" id="security">
+        <h2>Security</h2>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Session timeout</strong>
+            <p>Inactive sessions are invalidated after this period.</p>
+          </div>
+          <div class="setting-control">
+            <select>
+              <option>1 hour</option>
+              <option>8 hours</option>
+              <option selected>30 days</option>
+              <option>Never</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Minimum password length</strong>
+          </div>
+          <div class="setting-control">
+            <input type="number" value="12" min="8" max="128">
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Require 2FA for admins</strong>
+          </div>
+          <div class="setting-control">
+            <label class="toggle">
+              <input type="checkbox" checked>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="save-bar">
+          <button class="btn" onclick="saved(this)">Save</button>
+          <span class="notice" id="n-sec">Saved.</span>
+        </div>
+      </div>
+
+      <!-- Danger zone -->
+      <div class="section danger-zone" id="danger">
+        <h2>Danger zone</h2>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Purge all sessions</strong>
+            <p>Sign out every user immediately. They will need to sign in again.</p>
+          </div>
+          <div class="setting-control">
+            <button class="btn btn-danger" onclick="alert('All sessions purged — demo only')">Purge sessions</button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Reset sync history</strong>
+            <p>Delete all cached Toggl data and re-sync from scratch.</p>
+          </div>
+          <div class="setting-control">
+            <button class="btn btn-danger" onclick="alert('Sync history reset — demo only')">Reset sync</button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <strong>Delete all data</strong>
+            <p>Permanently delete all users, entries, and settings. Cannot be undone.</p>
+          </div>
+          <div class="setting-control" id="delete-wrap">
+            <button class="btn btn-danger" onclick="showDeleteConfirm()">Delete everything…</button>
+          </div>
+        </div>
+
+        <div id="delete-confirm" style="display:none; padding: 12px 0;">
+          <p style="font-size:13px; color:var(--danger); margin-bottom:10px">
+            This will permanently delete all data. Type <strong>DELETE</strong> to confirm.
+          </p>
+          <div style="display:flex; gap:8px; align-items:center">
+            <input type="text" id="delete-input" placeholder="Type DELETE" style="width:160px">
+            <button class="btn btn-danger" onclick="confirmDelete()">Delete everything</button>
+            <button class="btn btn-ghost" onclick="hideDeleteConfirm()">Cancel</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <a href="/docs">Documentation</a> ·
+    <a href="/about">About</a> ·
+    <a href="/status">Status</a>
+  </footer>
+
+  <script>
+    function saved(btn) {
+      const section = btn.closest('.section')
+      const notice = section.querySelector('.notice')
+      if (!notice) return
+      notice.classList.add('visible')
+      setTimeout(() => notice.classList.remove('visible'), 2500)
+    }
+
+    function showDeleteConfirm() {
+      document.getElementById('delete-wrap').style.display = 'none'
+      document.getElementById('delete-confirm').style.display = 'block'
+      document.getElementById('delete-input').focus()
+    }
+
+    function hideDeleteConfirm() {
+      document.getElementById('delete-wrap').style.display = ''
+      document.getElementById('delete-confirm').style.display = 'none'
+      document.getElementById('delete-input').value = ''
+    }
+
+    function confirmDelete() {
+      if (document.getElementById('delete-input').value !== 'DELETE') {
+        document.getElementById('delete-input').focus()
+        return
+      }
+      alert('All data deleted — demo only')
+    }
+
+    // Smooth scroll + active nav
+    document.querySelectorAll('.settings-nav a').forEach(a => {
+      a.addEventListener('click', e => {
+        document.querySelectorAll('.settings-nav a').forEach(x => x.classList.remove('active'))
+        a.classList.add('active')
+      })
+    })
+  </script>
+
+</body>
+</html>

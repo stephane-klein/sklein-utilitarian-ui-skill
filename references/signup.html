@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create account — AppName</title>
+  <style>
+    :root {
+      --bg:           #fff;
+      --bg-subtle:    #f7f7f7;
+      --border:       #ddd;
+      --text:         #1a1a1a;
+      --text-muted:   #666;
+      --link:         #0066cc;
+      --accent:       #0066cc;
+      --accent-hover: #0055bb;
+      --danger:       #cc0000;
+      --font: system-ui, -apple-system, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font: 15px/1.6 var(--font);
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding: 9px 20px;
+    }
+
+    .site-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .site-name:hover { text-decoration: underline; }
+
+    main {
+      max-width: 480px;
+      padding: 36px 20px 64px;
+    }
+
+    h1 {
+      font-size: 21px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -.01em;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    /* ── Form ── */
+    form { max-width: 340px; }
+
+    .field { margin-bottom: 13px; }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 13px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .field-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .field-error {
+      font-size: 12px;
+      color: var(--danger);
+      margin-top: 3px;
+      display: none;
+    }
+
+    .field-error.visible { display: block; }
+
+    input[type=text],
+    input[type=email],
+    input[type=password] {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    input:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: -1px;
+      border-color: var(--accent);
+    }
+
+    input.invalid {
+      border-color: var(--danger);
+    }
+
+    input.invalid:focus {
+      outline-color: var(--danger);
+    }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    button[type=submit] {
+      padding: 6px 16px;
+      background: var(--accent);
+      color: #fff;
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button[type=submit]:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .form-meta {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .form-meta a { color: var(--link); }
+
+    .terms {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      max-width: 340px;
+    }
+
+    .terms a { color: var(--text-muted); }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 11px 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="/" class="site-name">AppName</a>
+  </header>
+
+  <main>
+    <h1>Create account</h1>
+    <p class="subtitle">Already have one? <a href="/login">Sign in</a></p>
+
+    <form id="form" novalidate>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="first-name">First name</label>
+          <input type="text" id="first-name" name="first_name"
+                 autocomplete="given-name" autofocus required>
+        </div>
+        <div class="field">
+          <label for="last-name">Last name</label>
+          <input type="text" id="last-name" name="last_name"
+                 autocomplete="family-name" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email"
+               autocomplete="email" required>
+        <p class="field-error" id="email-error">Enter a valid email address.</p>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password"
+               autocomplete="new-password" required>
+        <p class="field-hint">At least 12 characters.</p>
+        <p class="field-error" id="password-error">At least 12 characters required.</p>
+      </div>
+
+      <div class="actions">
+        <button type="submit">Create account</button>
+      </div>
+
+    </form>
+
+    <p class="terms">
+      By creating an account you agree to our
+      <a href="/terms">Terms of service</a> and
+      <a href="/privacy">Privacy policy</a>.
+    </p>
+
+    <p class="form-meta">
+      Already have an account? <a href="/login">Sign in</a> ·
+      <a href="/">Back to homepage</a>
+    </p>
+  </main>
+
+  <footer>
+    <a href="/docs">Documentation</a> ·
+    <a href="/about">About</a> ·
+    <a href="/status">Status</a>
+  </footer>
+
+  <script>
+    const form     = document.getElementById('form')
+    const email    = document.getElementById('email')
+    const password = document.getElementById('password')
+
+    form.addEventListener('submit', e => {
+      e.preventDefault()
+      let valid = true
+
+      const emailErr = document.getElementById('email-error')
+      if (!email.value.includes('@')) {
+        email.classList.add('invalid')
+        emailErr.classList.add('visible')
+        valid = false
+      } else {
+        email.classList.remove('invalid')
+        emailErr.classList.remove('visible')
+      }
+
+      const passErr = document.getElementById('password-error')
+      if (password.value.length < 12) {
+        password.classList.add('invalid')
+        passErr.classList.add('visible')
+        valid = false
+      } else {
+        password.classList.remove('invalid')
+        passErr.classList.remove('visible')
+      }
+
+      if (valid) alert('Account created — demo only')
+    })
+
+    email.addEventListener('input', () => {
+      if (email.value.includes('@')) {
+        email.classList.remove('invalid')
+        document.getElementById('email-error').classList.remove('visible')
+      }
+    })
+
+    password.addEventListener('input', () => {
+      if (password.value.length >= 12) {
+        password.classList.remove('invalid')
+        document.getElementById('password-error').classList.remove('visible')
+      }
+    })
+  </script>
+
+</body>
+</html>

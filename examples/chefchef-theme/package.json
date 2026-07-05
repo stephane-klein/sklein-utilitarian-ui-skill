@@ -1,0 +1,26 @@
+{
+  "name": "chefchef-theme",
+  "type": "module",
+  "private": true,
+  "author": "Stéphane Klein",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "biome check --write",
+    "format": "biome format --write",
+    "lint": "biome lint"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.2",
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.69.1",
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@unocss/extractor-svelte": "latest",
+    "@unocss/svelte-scoped": "latest",
+    "svelte": "^5.56.4",
+    "unocss": "latest",
+    "vite": "^6.3.0"
+  }
+}

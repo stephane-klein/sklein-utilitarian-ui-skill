@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile — AppName</title>
+  <style>
+    :root {
+      --bg:           #fff;
+      --bg-subtle:    #f7f7f7;
+      --border:       #ddd;
+      --text:         #1a1a1a;
+      --text-muted:   #666;
+      --link:         #0066cc;
+      --accent:       #0066cc;
+      --accent-hover: #0055bb;
+      --danger:       #cc0000;
+      --font: system-ui, -apple-system, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font: 15px/1.6 var(--font);
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* ── Header ── */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding: 9px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .site-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .site-name:hover { text-decoration: underline; }
+
+    nav a {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-left: 12px;
+    }
+
+    nav a:hover { color: var(--link); text-decoration: underline; }
+    nav a.active { color: var(--text); font-weight: 600; }
+
+    /* ── Main ── */
+    main {
+      max-width: 640px;
+      padding: 36px 20px 64px;
+    }
+
+    h1 {
+      font-size: 21px;
+      font-weight: 700;
+      margin-bottom: 28px;
+      letter-spacing: -.01em;
+    }
+
+    /* ── Sections ── */
+    .section {
+      margin-bottom: 36px;
+    }
+
+    h2 {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Fields ── */
+    .field { margin-bottom: 14px; }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .field-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    input[type=text],
+    input[type=email],
+    input[type=password],
+    select,
+    textarea {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    textarea { resize: vertical; min-height: 72px; }
+
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: -1px;
+      border-color: var(--accent);
+    }
+
+    /* ── Actions ── */
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .btn {
+      padding: 6px 16px;
+      border-radius: 3px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border-color: var(--border);
+      font-weight: 400;
+    }
+
+    .btn-ghost:hover { background: var(--bg-subtle); color: var(--text); }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--danger);
+      border-color: transparent;
+      font-weight: 400;
+      padding-left: 0;
+    }
+
+    .btn-danger:hover { text-decoration: underline; background: transparent; }
+
+    /* ── Saved notice ── */
+    .notice {
+      font-size: 13px;
+      color: #1a7f37;
+    }
+
+    /* ── Danger zone ── */
+    .danger-zone h2 {
+      color: var(--danger);
+      border-color: #f5b8b8;
+    }
+
+    .danger-zone p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 11px 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="/" class="site-name">AppName</a>
+    <nav>
+      <a href="/dashboard">Dashboard</a> ·
+      <a href="/settings" class="active">Settings</a> ·
+      <a href="/logout">Sign out</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Profile</h1>
+
+    <!-- Informations personnelles -->
+    <div class="section">
+      <h2>Personal information</h2>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="first-name">First name</label>
+          <input type="text" id="first-name" name="first_name"
+                 value="Stéphane" autocomplete="given-name">
+        </div>
+        <div class="field">
+          <label for="last-name">Last name</label>
+          <input type="text" id="last-name" name="last_name"
+                 value="Klein" autocomplete="family-name">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email"
+               value="stephane@example.com" autocomplete="email">
+        <p class="field-hint">Used for sign in and notifications.</p>
+      </div>
+
+      <div class="field">
+        <label for="bio">Bio <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
+        <textarea id="bio" name="bio">Anti-conformist developer. FOSS, digital sovereignty, cooperative structures.</textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn" onclick="showSaved(this)">Save changes</button>
+        <span class="notice" id="notice-profile" style="display:none">Saved.</span>
+      </div>
+    </div>
+
+    <!-- Mot de passe -->
+    <div class="section">
+      <h2>Password</h2>
+
+      <div class="field">
+        <label for="current-password">Current password</label>
+        <input type="password" id="current-password" name="current_password"
+               autocomplete="current-password">
+      </div>
+
+      <div class="field">
+        <label for="new-password">New password</label>
+        <input type="password" id="new-password" name="new_password"
+               autocomplete="new-password">
+        <p class="field-hint">At least 12 characters.</p>
+      </div>
+
+      <div class="field">
+        <label for="confirm-password">Confirm new password</label>
+        <input type="password" id="confirm-password" name="confirm_password"
+               autocomplete="new-password">
+      </div>
+
+      <div class="actions">
+        <button class="btn" onclick="showSaved(this)">Update password</button>
+        <span class="notice" id="notice-password" style="display:none">Password updated.</span>
+      </div>
+    </div>
+
+    <!-- Préférences -->
+    <div class="section">
+      <h2>Preferences</h2>
+
+      <div class="field">
+        <label for="timezone">Timezone</label>
+        <select id="timezone" name="timezone" style="max-width:280px">
+          <option>UTC</option>
+          <option selected>Europe/Paris</option>
+          <option>America/New_York</option>
+          <option>Asia/Tokyo</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="language">Language</label>
+        <select id="language" name="language" style="max-width:160px">
+          <option>English</option>
+          <option selected>Français</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <button class="btn" onclick="showSaved(this)">Save preferences</button>
+        <span class="notice" id="notice-prefs" style="display:none">Saved.</span>
+      </div>
+    </div>
+
+    <!-- Danger zone -->
+    <div class="section danger-zone">
+      <h2>Delete account</h2>
+      <p>Permanently delete your account and all associated data. This cannot be undone.</p>
+      <div id="delete-idle">
+        <button class="btn-danger btn" onclick="showDeleteConfirm()">Delete my account…</button>
+      </div>
+      <div id="delete-confirm" style="display:none">
+        <p style="color:var(--danger); margin-bottom:8px">Are you sure? This is permanent.</p>
+        <div class="actions">
+          <button class="btn" style="background:var(--danger);border-color:var(--danger)">Yes, delete my account</button>
+          <button class="btn-ghost btn" onclick="hideDeleteConfirm()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <a href="/docs">Documentation</a> ·
+    <a href="/about">About</a> ·
+    <a href="/status">Status</a>
+  </footer>
+
+  <script>
+    function showSaved(btn) {
+      const section = btn.closest('.section')
+      const notices = section.querySelectorAll('.notice')
+      notices.forEach(n => {
+        n.style.display = 'inline'
+        setTimeout(() => n.style.display = 'none', 2500)
+      })
+    }
+
+    function showDeleteConfirm() {
+      document.getElementById('delete-idle').style.display = 'none'
+      document.getElementById('delete-confirm').style.display = 'block'
+    }
+
+    function hideDeleteConfirm() {
+      document.getElementById('delete-idle').style.display = 'block'
+      document.getElementById('delete-confirm').style.display = 'none'
+    }
+  </script>
+
+</body>
+</html>

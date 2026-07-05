@@ -1,0 +1,25 @@
+[env]
+_.path = './node_modules/.bin'
+
+[tools]
+node = "24.18.0"
+pnpm = "11.10.0"
+
+[tasks.lint]
+run = "pnpm run lint"
+
+[tasks.format]
+run = "pnpm run format"
+
+[tasks.check]
+run = "pnpm run check"
+
+[tasks.dev]
+run = "pnpm run dev"
+
+[tasks.build]
+run = "pnpm run build"
+
+[tasks.preview]
+run = "pnpm run preview"
+

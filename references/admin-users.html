@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Users — Admin — AppName</title>
+  <style>
+    :root {
+      --bg:           #fff;
+      --bg-subtle:    #f7f7f7;
+      --border:       #ddd;
+      --text:         #1a1a1a;
+      --text-muted:   #666;
+      --link:         #0066cc;
+      --accent:       #0066cc;
+      --accent-hover: #0055bb;
+      --danger:       #cc0000;
+      --admin-bg:     #fffbf0;
+      --admin-border: #e8d9a0;
+      --font: system-ui, -apple-system, sans-serif;
+      --mono: ui-monospace, 'Cascadia Code', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font: 15px/1.6 var(--font);
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* ── Header app ── */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding: 9px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .site-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    nav a {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    nav a + a::before { content: ' · '; }
+    nav a:hover { color: var(--link); text-decoration: underline; }
+    nav a.active { color: var(--text); font-weight: 600; }
+
+    /* ── Bandeau admin ── */
+    .admin-bar {
+      background: var(--admin-bg);
+      border-bottom: 1px solid var(--admin-border);
+      padding: 6px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 12px;
+      color: #7a6500;
+    }
+
+    .admin-bar strong { font-weight: 700; }
+
+    .admin-bar nav { margin-left: 8px; }
+
+    .admin-bar nav a {
+      font-size: 12px;
+      color: #7a6500;
+      text-decoration: none;
+    }
+
+    .admin-bar nav a + a::before { content: ' · '; color: #c4aa40; }
+    .admin-bar nav a:hover { text-decoration: underline; }
+    .admin-bar nav a.active { font-weight: 700; }
+
+    /* ── Main ── */
+    main {
+      max-width: 1080px;
+      padding: 28px 20px 64px;
+    }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    .toolbar-count {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .toolbar-spacer { flex: 1; }
+
+    input[type=search],
+    select {
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font: inherit;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    input[type=search] { width: 200px; }
+
+    input[type=search]:focus, select:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: -1px;
+      border-color: var(--accent);
+    }
+
+    .btn {
+      padding: 5px 14px;
+      border-radius: 3px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border-color: var(--border);
+      font-weight: 400;
+    }
+
+    .btn-ghost:hover { background: var(--bg-subtle); color: var(--text); }
+
+    /* ── Bulk actions ── */
+    .bulk-bar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .bulk-bar.visible { display: flex; }
+    .bulk-bar .count { font-weight: 600; margin-right: 4px; }
+    .bulk-bar .sep { color: var(--border); }
+
+    .bulk-bar button {
+      font: 13px var(--font);
+      padding: 3px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+    }
+
+    .bulk-bar button:hover { background: var(--bg-subtle); }
+    .bulk-bar .bulk-danger { color: var(--danger); border-color: #f5b8b8; }
+    .bulk-bar .bulk-danger:hover { background: #fde8e8; }
+    .bulk-bar .clear { background: none; border: none; color: var(--text-muted); cursor: pointer; margin-left: auto; font-size: 12px; }
+
+    /* ── Table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      padding: 6px 8px;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+
+    thead th.right { text-align: right; }
+
+    thead th.sortable {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    thead th.sortable:hover { color: var(--text); }
+    thead th.sort-asc::after  { content: ' ↑'; }
+    thead th.sort-desc::after { content: ' ↓'; }
+
+    td {
+      padding: 7px 8px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:hover td { background: var(--bg-subtle); }
+    tr.selected td { background: #eff6ff; }
+
+    /* Checkbox */
+    td.col-check, th.col-check { width: 32px; }
+
+    input[type=checkbox] { cursor: pointer; }
+
+    /* Colonnes */
+    .col-id       { width: 52px; font-family: var(--mono); color: var(--text-muted); font-size: 12px; }
+    .col-name     { width: 18%; }
+    .col-email    { width: 20%; }
+    .col-role     { width: 8%;  }
+    .col-status   { width: 8%;  }
+    .col-joined   { width: 10%; color: var(--text-muted); }
+    .col-last     { width: 8%;  color: var(--text-muted); font-family: var(--mono); font-size: 12px; }
+    .col-entries  { width: 8%;  text-align: right; font-family: var(--mono); }
+    .col-actions  { width: 12%; text-align: right; white-space: nowrap; }
+
+    .user-name a { color: var(--text); text-decoration: none; font-weight: 500; }
+    .user-name a:hover { color: var(--link); text-decoration: underline; }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 2px;
+      border: 1px solid;
+    }
+
+    .badge-active   { background: #e6f4ea; color: #1a7f37; border-color: #acd3b0; }
+    .badge-inactive { background: var(--bg-subtle); color: var(--text-muted); border-color: var(--border); }
+    .badge-pending  { background: #fff8e1; color: #856404; border-color: #f0c36d; }
+    .badge-banned   { background: #fde8e8; color: var(--danger); border-color: #f5b8b8; }
+    .badge-admin    { background: #fffbf0; color: #7a6500; border-color: #e8d9a0; }
+
+    /* Row actions */
+    .row-actions { opacity: 0; display: flex; justify-content: flex-end; gap: 8px; }
+    tr:hover .row-actions { opacity: 1; }
+
+    .row-actions a {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .row-actions a:hover { color: var(--link); text-decoration: underline; }
+    .row-actions .danger:hover { color: var(--danger); }
+
+    /* Inline confirm */
+    .inline-confirm {
+      display: none;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .inline-confirm.visible { display: flex; }
+
+    .inline-confirm button {
+      font: 12px var(--font);
+      padding: 1px 8px;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    .inline-confirm .yes { background: var(--danger); color: #fff; border: 1px solid var(--danger); }
+    .inline-confirm .no  { background: none; border: 1px solid var(--border); color: var(--text-muted); }
+
+    /* ── Stats ── */
+    .stats-row {
+      display: flex;
+      gap: 28px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-row strong {
+      font-family: var(--mono);
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 700;
+      display: block;
+    }
+
+    /* ── Pagination ── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      font-size: 13px;
+    }
+
+    .pagination a { color: var(--link); }
+    .pagination .disabled { color: var(--text-muted); }
+    .pagination .info { margin-left: auto; color: var(--text-muted); }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 11px 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <!-- Header app normal -->
+  <header class="header">
+    <a href="/" class="site-name">AppName</a>
+    <nav>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/time">Time entries</a>
+      <a href="/settings">Settings</a>
+      <a href="/logout">Sign out</a>
+    </nav>
+  </header>
+
+  <!-- Bandeau admin — séparé du header app -->
+  <div class="admin-bar">
+    <strong>Admin</strong>
+    <nav>
+      <a href="/admin">Overview</a>
+      <a href="/admin/users" class="active">Users</a>
+      <a href="/admin/activity">Activity log</a>
+      <a href="/admin/settings">Settings</a>
+    </nav>
+    <span style="margin-left:auto">
+      <a href="/" style="color:#7a6500">← Back to app</a>
+    </span>
+  </div>
+
+  <main>
+
+    <!-- Stats rapides -->
+    <div class="stats-row">
+      <div><strong>312</strong> Total users</div>
+      <div><strong>287</strong> Active</div>
+      <div><strong>18</strong> Pending</div>
+      <div><strong>7</strong> Banned</div>
+      <div><strong>+24</strong> This month</div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <h1>Users</h1>
+      <span class="toolbar-count">312 total</span>
+      <div class="toolbar-spacer"></div>
+      <input type="search" placeholder="Search name or email…" autofocus>
+      <select id="filter-status">
+        <option value="">All statuses</option>
+        <option>Active</option>
+        <option>Pending</option>
+        <option>Inactive</option>
+        <option>Banned</option>
+      </select>
+      <select id="filter-role">
+        <option value="">All roles</option>
+        <option>Admin</option>
+        <option>Member</option>
+      </select>
+      <a href="/admin/users/invite" class="btn">Invite user</a>
+      <a href="/admin/users/export.csv" class="btn btn-ghost">Export CSV</a>
+    </div>
+
+    <!-- Bulk actions (visible si sélection) -->
+    <div class="bulk-bar" id="bulk-bar">
+      <span class="count" id="bulk-count">0</span> selected
+      <span class="sep">|</span>
+      <button onclick="">Send email</button>
+      <button onclick="">Change role…</button>
+      <button class="bulk-danger" onclick="">Ban selected</button>
+      <button class="bulk-danger" onclick="">Delete selected</button>
+      <button class="clear" onclick="clearSelection()">✕ Clear</button>
+    </div>
+
+    <!-- Table -->
+    <table>
+      <thead>
+        <tr>
+          <th class="col-check">
+            <input type="checkbox" id="check-all" onchange="toggleAll(this)">
+          </th>
+          <th class="col-id">ID</th>
+          <th class="col-name sortable sort-asc" onclick="sortBy('name')">Name</th>
+          <th class="col-email">Email</th>
+          <th class="col-role">Role</th>
+          <th class="col-status">Status</th>
+          <th class="col-joined sortable" onclick="sortBy('joined')">Joined</th>
+          <th class="col-last right">Last seen</th>
+          <th class="col-entries right">Entries</th>
+          <th class="col-actions"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+
+        <tr>
+          <td class="col-check"><input type="checkbox" class="row-check" onchange="updateBulk()"></td>
+          <td class="col-id">1</td>
+          <td class="col-name"><span class="user-name"><a href="/admin/users/1">Stéphane Klein</a></span></td>
+          <td>stephane@example.com</td>
+          <td><span class="badge badge-admin">Admin</span></td>
+          <td><span class="badge badge-active">Active</span></td>
+          <td class="col-joined">12 Jan 2024</td>
+          <td class="col-last">now</td>
+          <td class="col-entries">1 204</td>
+          <td class="col-actions">
+            <span class="row-actions">
+              <a href="/admin/users/1/edit">edit</a>
+              <a href="#" onclick="impersonate(event,1)">impersonate</a>
+            </span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="col-check"><input type="checkbox" class="row-check" onchange="updateBulk()"></td>
+          <td class="col-id">2</td>
+          <td class="col-name"><span class="user-name"><a href="/admin/users/2">Sarah Lefèvre</a></span></td>
+          <td>sarah@example.com</td>
+          <td><span class="badge" style="background:var(--bg-subtle);color:var(--text-muted);border-color:var(--border)">Member</span></td>
+          <td><span class="badge badge-active">Active</span></td>
+          <td class="col-joined">3 Mar 2024</td>
+          <td class="col-last">2h ago</td>
+          <td class="col-entries">342</td>
+          <td class="col-actions">
+            <span class="row-actions">
+              <a href="/admin/users/2/edit">edit</a>
+              <a href="#" onclick="impersonate(event,2)">impersonate</a>
+              <a href="#" class="danger" onclick="showConfirm(this,event,'ban')">ban</a>
+            </span>
+            <span class="inline-confirm">
+              Ban Sarah? <button class="yes">Ban</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+            </span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="col-check"><input type="checkbox" class="row-check" onchange="updateBulk()"></td>
+          <td class="col-id">3</td>
+          <td class="col-name"><span class="user-name"><a href="/admin/users/3">Arnaud Petit</a></span></td>
+          <td>arnaud@example.com</td>
+          <td><span class="badge" style="background:var(--bg-subtle);color:var(--text-muted);border-color:var(--border)">Member</span></td>
+          <td><span class="badge badge-pending">Pending</span></td>
+          <td class="col-joined">—</td>
+          <td class="col-last">—</td>
+          <td class="col-entries">0</td>
+          <td class="col-actions">
+            <span class="row-actions">
+              <a href="#">resend invite</a>
+              <a href="#" class="danger" onclick="showConfirm(this,event,'revoke')">revoke</a>
+            </span>
+            <span class="inline-confirm">
+              Revoke invite? <button class="yes">Revoke</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+            </span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="col-check"><input type="checkbox" class="row-check" onchange="updateBulk()"></td>
+          <td class="col-id">4</td>
+          <td class="col-name"><span class="user-name"><a href="/admin/users/4">Baptiste Durand</a></span></td>
+          <td>baptiste@example.com</td>
+          <td><span class="badge" style="background:var(--bg-subtle);color:var(--text-muted);border-color:var(--border)">Member</span></td>
+          <td><span class="badge badge-banned">Banned</span></td>
+          <td class="col-joined">8 Nov 2023</td>
+          <td class="col-last">43d ago</td>
+          <td class="col-entries">12</td>
+          <td class="col-actions">
+            <span class="row-actions">
+              <a href="/admin/users/4/edit">edit</a>
+              <a href="#" onclick="showConfirm(this,event,'unban')">unban</a>
+              <a href="#" class="danger" onclick="showConfirm(this,event,'delete')">delete</a>
+            </span>
+            <span class="inline-confirm">
+              Delete Baptiste? <button class="yes">Delete</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+            </span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="col-check"><input type="checkbox" class="row-check" onchange="updateBulk()"></td>
+          <td class="col-id">5</td>
+          <td class="col-name"><span class="user-name"><a href="/admin/users/5">Marie Fontaine</a></span></td>
+          <td>marie@example.com</td>
+          <td><span class="badge" style="background:var(--bg-subtle);color:var(--text-muted);border-color:var(--border)">Member</span></td>
+          <td><span class="badge badge-active">Active</span></td>
+          <td class="col-joined">21 Feb 2024</td>
+          <td class="col-last">1d ago</td>
+          <td class="col-entries">89</td>
+          <td class="col-actions">
+            <span class="row-actions">
+              <a href="/admin/users/5/edit">edit</a>
+              <a href="#" onclick="impersonate(event,5)">impersonate</a>
+              <a href="#" class="danger" onclick="showConfirm(this,event,'ban')">ban</a>
+            </span>
+            <span class="inline-confirm">
+              Ban Marie? <button class="yes">Ban</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+            </span>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <nav class="pagination">
+      <span class="disabled">« First</span>
+      <span class="disabled">‹ Prev</span>
+      <a href="?after=5">Next ›</a>
+      <a href="?after=300">Last »</a>
+      <span class="info">1–5 of 312 · <a href="/admin/users/export.csv">export CSV</a></span>
+    </nav>
+
+  </main>
+
+  <footer>
+    <a href="/docs">Documentation</a> ·
+    <a href="/about">About</a> ·
+    <a href="/status">Status</a>
+  </footer>
+
+  <script>
+    function updateBulk() {
+      const checked = document.querySelectorAll('.row-check:checked').length
+      const bar = document.getElementById('bulk-bar')
+      bar.classList.toggle('visible', checked > 0)
+      document.getElementById('bulk-count').textContent = checked
+    }
+
+    function toggleAll(cb) {
+      document.querySelectorAll('.row-check').forEach(c => {
+        c.checked = cb.checked
+        c.closest('tr').classList.toggle('selected', cb.checked)
+      })
+      updateBulk()
+    }
+
+    function clearSelection() {
+      document.querySelectorAll('.row-check').forEach(c => {
+        c.checked = false
+        c.closest('tr').classList.remove('selected')
+      })
+      document.getElementById('check-all').checked = false
+      updateBulk()
+    }
+
+    document.querySelectorAll('.row-check').forEach(c => {
+      c.addEventListener('change', () => {
+        c.closest('tr').classList.toggle('selected', c.checked)
+      })
+    })
+
+    function showConfirm(link, e, action) {
+      e.preventDefault()
+      const td = link.closest('td')
+      td.querySelector('.row-actions').style.display = 'none'
+      td.querySelector('.inline-confirm').classList.add('visible')
+    }
+
+    function hideConfirm(btn) {
+      const td = btn.closest('td')
+      td.querySelector('.row-actions').style.display = ''
+      td.querySelector('.inline-confirm').classList.remove('visible')
+    }
+
+    function impersonate(e, id) {
+      e.preventDefault()
+      if (confirm(`Impersonate user #${id}? You will act as this user until you stop.`)) {
+        alert(`Now impersonating user #${id} — demo only`)
+      }
+    }
+
+    function sortBy(col) {
+      document.querySelectorAll('thead th').forEach(th => {
+        th.classList.remove('sort-asc','sort-desc')
+      })
+      event.currentTarget.classList.add('sort-asc')
+    }
+  </script>
+
+</body>
+</html>

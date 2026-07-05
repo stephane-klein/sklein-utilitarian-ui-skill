@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in — AppName</title>
+  <style>
+    :root {
+      --bg:           #fff;
+      --bg-subtle:    #f7f7f7;
+      --border:       #ddd;
+      --text:         #1a1a1a;
+      --text-muted:   #666;
+      --link:         #0066cc;
+      --accent:       #0066cc;
+      --accent-hover: #0055bb;
+      --danger:       #cc0000;
+      --font: system-ui, -apple-system, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font: 15px/1.6 var(--font);
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* ── Header ── */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding: 9px 20px;
+    }
+
+    .site-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .site-name:hover { text-decoration: underline; }
+
+    /* ── Main ── */
+    main {
+      max-width: 480px;
+      padding: 36px 20px 64px;
+    }
+
+    h1 {
+      font-size: 21px;
+      font-weight: 700;
+      margin-bottom: 22px;
+      letter-spacing: -.01em;
+    }
+
+    /* ── Error ── */
+    .error {
+      font-size: 13px;
+      color: var(--danger);
+      margin-bottom: 14px;
+    }
+
+    /* ── Form ── */
+    form { max-width: 340px; }
+
+    .field { margin-bottom: 13px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    input[type=email],
+    input[type=password] {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    input:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: -1px;
+      border-color: var(--accent);
+    }
+
+    /* ── Actions ── */
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    button[type=submit] {
+      padding: 6px 16px;
+      background: var(--accent);
+      color: #fff;
+      border: 1px solid var(--accent);
+      border-radius: 3px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button[type=submit]:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .actions a {
+      font-size: 13px;
+      color: var(--link);
+    }
+
+    /* ── Sous le formulaire ── */
+    .form-meta {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .form-meta a { color: var(--link); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 11px 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── Demo toggle ── */
+    .state-toggle {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 11px;
+      color: #999;
+    }
+
+    .state-toggle button {
+      padding: 3px 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      border-radius: 2px;
+      cursor: pointer;
+      font: 11px var(--font);
+      color: var(--text-muted);
+    }
+
+    .state-toggle button.active {
+      background: var(--text);
+      color: #fff;
+      border-color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="/" class="site-name">AppName</a>
+  </header>
+
+  <main>
+    <h1>Sign in</h1>
+
+    <p class="error" id="error" style="display:none">
+      Invalid email or password.
+    </p>
+
+    <form id="form" novalidate>
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email"
+               autocomplete="email" autofocus required>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password"
+               autocomplete="current-password" required>
+      </div>
+
+      <div class="actions">
+        <button type="submit">Sign in</button>
+        <a href="/forgot-password">Forgot password?</a>
+      </div>
+    </form>
+
+    <p class="form-meta">
+      No account? <a href="/signup">Create one</a> ·
+      <a href="/">Back to homepage</a>
+    </p>
+  </main>
+
+  <footer>
+    <a href="/docs">Documentation</a> ·
+    <a href="/about">About</a> ·
+    <a href="/status">Status</a>
+  </footer>
+
+  <div class="state-toggle">
+    <span>demo:</span>
+    <button id="btn-idle" class="active" onclick="setState('idle')">idle</button>
+    <button id="btn-error" onclick="setState('error')">error</button>
+    <button id="btn-filled" onclick="setState('filled')">filled</button>
+  </div>
+
+  <script>
+    const error = document.getElementById('error')
+    const email = document.getElementById('email')
+    const pass  = document.getElementById('password')
+
+    function setState(s) {
+      document.querySelectorAll('.state-toggle button')
+        .forEach(b => b.classList.remove('active'))
+      document.getElementById('btn-' + s).classList.add('active')
+      if (s === 'idle')   { error.style.display='none'; email.value=''; pass.value='' }
+      if (s === 'error')  { error.style.display='block'; email.value='stephane@example.com'; pass.value='wrongpassword' }
+      if (s === 'filled') { error.style.display='none'; email.value='stephane@example.com'; pass.value='••••••••••••' }
+    }
+
+    document.getElementById('form').addEventListener('submit', e => {
+      e.preventDefault(); setState('error')
+    })
+  </script>
+
+</body>
+</html>

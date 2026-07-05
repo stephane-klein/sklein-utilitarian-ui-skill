@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+.svelte-kit/
+NEXT_STEPS.md
+TODO.md
+TASKS.md
+.DS_Store
+.playwright-mcp/

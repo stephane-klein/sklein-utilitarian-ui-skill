@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Users — AppName</title>
+  <style>
+    :root {
+      --bg:           #fff;
+      --bg-subtle:    #f7f7f7;
+      --border:       #ddd;
+      --text:         #1a1a1a;
+      --text-muted:   #666;
+      --link:         #0066cc;
+      --accent:       #0066cc;
+      --accent-hover: #0055bb;
+      --danger:       #cc0000;
+      --font: system-ui, -apple-system, sans-serif;
+      --mono: ui-monospace, 'Cascadia Code', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font: 15px/1.6 var(--font);
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* ── Header ── */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding: 9px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .site-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    nav a {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    nav a + a::before { content: ' · '; }
+    nav a:hover { color: var(--link); text-decoration: underline; }
+    nav a.active { color: var(--text); font-weight: 600; }
+
+    /* ── Main ── */
+    main {
+      max-width: 960px;
+      padding: 28px 20px 64px;
+    }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar h1 {
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    .toolbar-count {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .toolbar-spacer { flex: 1; }
+
+    input[type=search] {
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font: inherit;
+      font-size: 13px;
+      width: 200px;
+    }
+
+    input[type=search]:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: -1px;
+      border-color: var(--accent);
+    }
+
+    .btn {
+      padding: 5px 14px;
+      border-radius: 3px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+    /* ── Table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    thead th {
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      padding: 6px 8px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    thead th.right { text-align: right; }
+
+    td {
+      padding: 8px 8px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:hover td { background: var(--bg-subtle); }
+
+    .col-name     { width: 26%; }
+    .col-email    { width: 26%; }
+    .col-role     { width: 10%; }
+    .col-status   { width: 10%; }
+    .col-joined   { width: 14%; color: var(--text-muted); font-size: 13px; }
+    .col-last     { width: 8%;  color: var(--text-muted); font-size: 13px; font-family: var(--mono); }
+    .col-actions  { width: 6%;  text-align: right; white-space: nowrap; }
+
+    /* Name cell */
+    .user-name { font-weight: 500; }
+    .user-name a { color: var(--text); text-decoration: none; }
+    .user-name a:hover { color: var(--link); text-decoration: underline; }
+
+    /* Role */
+    .role-admin { font-size: 12px; color: var(--text-muted); }
+    .role-user  { font-size: 12px; color: var(--text-muted); }
+
+    /* Status badges */
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 2px;
+      border: 1px solid;
+    }
+
+    .badge-active   { background: #e6f4ea; color: #1a7f37; border-color: #acd3b0; }
+    .badge-inactive { background: var(--bg-subtle); color: var(--text-muted); border-color: var(--border); }
+    .badge-pending  { background: #fff8e1; color: #856404; border-color: #f0c36d; }
+
+    /* Row actions */
+    .row-actions { opacity: 0; }
+    tr:hover .row-actions { opacity: 1; }
+
+    .row-actions a {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-left: 8px;
+    }
+
+    .row-actions a:first-child { margin-left: 0; }
+    .row-actions a:hover { color: var(--link); text-decoration: underline; }
+    .row-actions .del:hover { color: var(--danger); }
+
+    /* Inline confirm */
+    .inline-confirm {
+      font-size: 12px;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .inline-confirm.visible { display: flex; justify-content: flex-end; }
+
+    .inline-confirm button {
+      font: 12px var(--font);
+      padding: 1px 8px;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    .inline-confirm .yes { background: var(--danger); color: #fff; border: 1px solid var(--danger); }
+    .inline-confirm .no  { background: none; border: 1px solid var(--border); color: var(--text-muted); }
+
+    /* ── Pagination ── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      font-size: 13px;
+    }
+
+    .pagination a { color: var(--link); }
+    .pagination .disabled { color: var(--text-muted); }
+    .pagination .info { margin-left: auto; color: var(--text-muted); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 11px 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="/" class="site-name">AppName</a>
+    <nav>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/time">Time entries</a>
+      <a href="/users" class="active">Users</a>
+      <a href="/settings">Settings</a>
+      <a href="/logout">Sign out</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <div class="toolbar">
+      <h1>Users</h1>
+      <span class="toolbar-count">24 total</span>
+      <div class="toolbar-spacer"></div>
+      <input type="search" placeholder="Search users…" autofocus>
+      <a href="/users/invite" class="btn">Invite user</a>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="col-name">Name</th>
+          <th class="col-email">Email</th>
+          <th class="col-role">Role</th>
+          <th class="col-status">Status</th>
+          <th class="col-joined">Joined</th>
+          <th class="col-last right">Last seen</th>
+          <th class="col-actions"></th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td class="col-name">
+            <span class="user-name"><a href="/users/1">Stéphane Klein</a></span>
+          </td>
+          <td class="col-email">stephane@example.com</td>
+          <td class="col-role"><span class="role-admin">Admin</span></td>
+          <td class="col-status"><span class="badge badge-active">Active</span></td>
+          <td class="col-joined">12 Jan 2024</td>
+          <td class="col-last">now</td>
+          <td class="col-actions">
+            <span class="row-actions">
+              <a href="/users/1/edit">edit</a>
+            </span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="col-name">
+            <span class="user-name"><a href="/users/2">Sarah Lefèvre</a></span>
+          </td>
+          <td class="col-email">sarah@example.com</td>
+          <td class="col-role"><span class="role-user">Member</span></td>
+          <td class="col-status"><span class="badge badge-active">Active</span></td>
+          <td class="col-joined">3 Mar 2024</td>
+          <td class="col-last">2h ago</td>
+          <td class="col-actions">
+            <span class="row-actions">
+              <a href="/users/2/edit">edit</a>
+              <a href="#" class="del" onclick="showConfirm(this,event)">delete</a>
+            </span>
+            <span class="inline-confirm">
+              Sure? <button class="yes">Delete</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+            </span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="col-name">
+            <span class="user-name"><a href="/users/3">Arnaud Petit</a></span>
+          </td>
+          <td class="col-email">arnaud@example.com</td>
+          <td class="col-role"><span class="role-user">Member</span></td>
+          <td class="col-status"><span class="badge badge-pending">Pending</span></td>
+          <td class="col-joined">—</td>
+          <td class="col-last">—</td>
+          <td class="col-actions">
+            <span class="row-actions">
+              <a href="#">resend</a>
+              <a href="#" class="del" onclick="showConfirm(this,event)">revoke</a>
+            </span>
+            <span class="inline-confirm">
+              Sure? <button class="yes">Revoke</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+            </span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="col-name">
+            <span class="user-name"><a href="/users/4">Baptiste Durand</a></span>
+          </td>
+          <td class="col-email">baptiste@example.com</td>
+          <td class="col-role"><span class="role-user">Member</span></td>
+          <td class="col-status"><span class="badge badge-inactive">Inactive</span></td>
+          <td class="col-joined">8 Nov 2023</td>
+          <td class="col-last">43d ago</td>
+          <td class="col-actions">
+            <span class="row-actions">
+              <a href="/users/4/edit">edit</a>
+              <a href="#" class="del" onclick="showConfirm(this,event)">delete</a>
+            </span>
+            <span class="inline-confirm">
+              Sure? <button class="yes">Delete</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+            </span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="col-name">
+            <span class="user-name"><a href="/users/5">Marie Fontaine</a></span>
+          </td>
+          <td class="col-email">marie@example.com</td>
+          <td class="col-role"><span class="role-user">Member</span></td>
+          <td class="col-status"><span class="badge badge-active">Active</span></td>
+          <td class="col-joined">21 Feb 2024</td>
+          <td class="col-last">1d ago</td>
+          <td class="col-actions">
+            <span class="row-actions">
+              <a href="/users/5/edit">edit</a>
+              <a href="#" class="del" onclick="showConfirm(this,event)">delete</a>
+            </span>
+            <span class="inline-confirm">
+              Sure? <button class="yes">Delete</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+            </span>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <nav class="pagination">
+      <span class="disabled">« First</span>
+      <span class="disabled">‹ Prev</span>
+      <a href="?after=5">Next ›</a>
+      <a href="?after=20">Last »</a>
+      <span class="info">1–5 of 24</span>
+    </nav>
+
+  </main>
+
+  <footer>
+    <a href="/docs">Documentation</a> ·
+    <a href="/about">About</a> ·
+    <a href="/status">Status</a>
+  </footer>
+
+  <script>
+    function showConfirm(link, e) {
+      e.preventDefault()
+      const td = link.closest('td')
+      td.querySelector('.row-actions').style.display = 'none'
+      td.querySelector('.inline-confirm').classList.add('visible')
+    }
+
+    function hideConfirm(btn) {
+      const td = btn.closest('td')
+      td.querySelector('.row-actions').style.display = ''
+      td.querySelector('.inline-confirm').classList.remove('visible')
+    }
+  </script>
+
+</body>
+</html>

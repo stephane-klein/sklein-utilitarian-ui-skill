@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Time entries — AppName</title>
+  <style>
+    :root {
+      --bg:           #fff;
+      --bg-subtle:    #f7f7f7;
+      --border:       #ddd;
+      --text:         #1a1a1a;
+      --text-muted:   #666;
+      --link:         #0066cc;
+      --accent:       #0066cc;
+      --accent-hover: #0055bb;
+      --danger:       #cc0000;
+      --running:      #1a7f37;
+      --font: system-ui, -apple-system, sans-serif;
+      --mono: ui-monospace, 'Cascadia Code', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font: 15px/1.6 var(--font);
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* ── Header ── */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding: 9px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .site-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    nav a {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-left: 0;
+    }
+
+    nav a + a::before { content: ' · '; }
+    nav a:hover { color: var(--link); text-decoration: underline; }
+    nav a.active { color: var(--text); font-weight: 600; }
+
+    /* ── Main ── */
+    main {
+      max-width: 960px;
+      padding: 28px 20px 64px;
+    }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar h1 {
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      margin-right: 4px;
+    }
+
+    .toolbar-spacer { flex: 1; }
+
+    input[type=search] {
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font: inherit;
+      font-size: 13px;
+      width: 200px;
+    }
+
+    input[type=search]:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: -1px;
+      border-color: var(--accent);
+    }
+
+    select {
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font: inherit;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    /* ── Running entry banner ── */
+    .running-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border: 1px solid #acd3b0;
+      background: #e6f4ea;
+      border-radius: 3px;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .running-dot {
+      width: 8px; height: 8px;
+      background: var(--running);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .3; }
+    }
+
+    .running-banner .duration {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--running);
+      font-weight: 600;
+      margin-left: auto;
+    }
+
+    .running-banner .stop-btn {
+      padding: 2px 10px;
+      border: 1px solid #acd3b0;
+      background: #fff;
+      border-radius: 3px;
+      font: 12px var(--font);
+      cursor: pointer;
+      color: var(--running);
+    }
+
+    .running-banner .stop-btn:hover { background: #d4edda; }
+
+    /* ── Day group ── */
+    .day-group { margin-bottom: 0; }
+
+    .day-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 10px 0 4px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 0;
+    }
+
+    .day-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .day-total {
+      font-size: 13px;
+      font-family: var(--mono);
+      color: var(--text-muted);
+    }
+
+    /* ── Table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 7px 8px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:hover td { background: var(--bg-subtle); }
+
+    /* Colonnes */
+    .col-description { width: 38%; }
+    .col-project      { width: 18%; }
+    .col-tags         { width: 14%; }
+    .col-time         { width: 14%; color: var(--text-muted); font-size: 13px; }
+    .col-duration     { width: 10%; text-align: right; font-family: var(--mono); font-size: 13px; font-weight: 600; }
+    .col-actions      { width: 6%;  text-align: right; white-space: nowrap; }
+
+    .entry-description {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .entry-description.empty {
+      color: var(--text-muted);
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    /* Project pill — juste une couleur de texte, pas de badge */
+    .project { color: var(--text-muted); font-size: 13px; }
+    .project-dot {
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      margin-right: 4px;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+
+    /* Tags */
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 0 5px;
+      margin-right: 3px;
+      white-space: nowrap;
+    }
+
+    /* Actions inline */
+    .row-actions { opacity: 0; }
+    tr:hover .row-actions { opacity: 1; }
+
+    .row-actions a {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-left: 8px;
+    }
+
+    .row-actions a:hover { color: var(--link); text-decoration: underline; }
+    .row-actions .del:hover { color: var(--danger); }
+
+    /* Inline confirm */
+    .inline-confirm {
+      font-size: 12px;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .inline-confirm.visible { display: flex; }
+
+    .inline-confirm button {
+      font: 12px var(--font);
+      padding: 1px 8px;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    .inline-confirm .yes {
+      background: var(--danger);
+      color: #fff;
+      border: 1px solid var(--danger);
+    }
+
+    .inline-confirm .no {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    /* ── Résumé de période ── */
+    .period-summary {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      padding: 14px 0 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 4px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .period-summary strong {
+      font-family: var(--mono);
+      font-size: 16px;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    /* ── Pagination ── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 24px;
+      font-size: 13px;
+    }
+
+    .pagination a { color: var(--link); }
+    .pagination .sep { color: var(--border); }
+    .pagination .info { color: var(--text-muted); margin-left: auto; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 11px 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="/" class="site-name">AppName</a>
+    <nav>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/time" class="active">Time entries</a>
+      <a href="/reports">Reports</a>
+      <a href="/settings">Settings</a>
+      <a href="/logout">Sign out</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <h1>Time entries</h1>
+      <div class="toolbar-spacer"></div>
+      <input type="search" placeholder="Search entries…" id="search">
+      <select id="filter-project">
+        <option value="">All projects</option>
+        <option>toggl-pg-mirror</option>
+        <option>memex</option>
+        <option>Le Charlatan</option>
+        <option>Homelab</option>
+      </select>
+      <select id="filter-period">
+        <option>This week</option>
+        <option>Last week</option>
+        <option>This month</option>
+        <option>Custom…</option>
+      </select>
+    </div>
+
+    <!-- Entrée en cours -->
+    <div class="running-banner">
+      <span class="running-dot"></span>
+      <span>
+        <strong>Review PR #42 — auth middleware</strong>
+        &nbsp;·&nbsp;
+        <span class="project">
+          <span class="project-dot" style="background:#0066cc"></span>toggl-pg-mirror
+        </span>
+      </span>
+      <span class="duration" id="timer">01:23:45</span>
+      <button class="stop-btn" onclick="this.closest('.running-banner').style.display='none'">Stop</button>
+    </div>
+
+    <!-- Résumé de la période -->
+    <div class="period-summary">
+      <span>This week &nbsp;<strong>23h 40m</strong></span>
+      <span>Mon–Fri &nbsp;<strong>4.7 h/day avg</strong></span>
+      <span style="margin-left:auto; font-size:12px">
+        Synced from Toggl · <a href="#" style="color:var(--link)">refresh</a>
+      </span>
+    </div>
+
+    <!-- Jour : Today -->
+    <div class="day-group">
+      <div class="day-header">
+        <span class="day-label">Today — Monday, July 7</span>
+        <span class="day-total">4h 12m</span>
+      </div>
+      <table>
+        <tbody>
+
+          <tr>
+            <td class="col-description">
+              <span class="entry-description">Review PR #42 — auth middleware</span>
+            </td>
+            <td class="col-project">
+              <span class="project">
+                <span class="project-dot" style="background:#0066cc"></span>toggl-pg-mirror
+              </span>
+            </td>
+            <td class="col-tags"><span class="tag">code-review</span></td>
+            <td class="col-time">09:00 – running</td>
+            <td class="col-duration" style="color:var(--running)">1:23:45</td>
+            <td class="col-actions">
+              <span class="row-actions">
+                <a href="#">edit</a>
+                <a href="#" class="del" onclick="showConfirm(this,event)">delete</a>
+              </span>
+              <span class="inline-confirm">
+                Sure? <button class="yes">Delete</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+              </span>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="col-description">
+              <span class="entry-description">LiteLLM proxy config — multi-model routing</span>
+            </td>
+            <td class="col-project">
+              <span class="project">
+                <span class="project-dot" style="background:#7c3aed"></span>Homelab
+              </span>
+            </td>
+            <td class="col-tags"><span class="tag">infra</span> <span class="tag">ai</span></td>
+            <td class="col-time">08:00 – 09:00</td>
+            <td class="col-duration">1:00:00</td>
+            <td class="col-actions">
+              <span class="row-actions">
+                <a href="#">edit</a>
+                <a href="#" class="del" onclick="showConfirm(this,event)">delete</a>
+              </span>
+              <span class="inline-confirm">
+                Sure? <button class="yes">Delete</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+              </span>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="col-description">
+              <span class="entry-description empty">(no description)</span>
+            </td>
+            <td class="col-project">
+              <span class="project">
+                <span class="project-dot" style="background:#059669"></span>memex
+              </span>
+            </td>
+            <td class="col-tags"></td>
+            <td class="col-time">06:30 – 08:00</td>
+            <td class="col-duration">1:48:00</td>
+            <td class="col-actions">
+              <span class="row-actions">
+                <a href="#">edit</a>
+                <a href="#" class="del" onclick="showConfirm(this,event)">delete</a>
+              </span>
+              <span class="inline-confirm">
+                Sure? <button class="yes">Delete</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+              </span>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Jour : Yesterday -->
+    <div class="day-group">
+      <div class="day-header">
+        <span class="day-label">Yesterday — Sunday, July 6</span>
+        <span class="day-total">5h 30m</span>
+      </div>
+      <table>
+        <tbody>
+
+          <tr>
+            <td class="col-description">
+              <span class="entry-description">Rédaction chapitre 2 — French Tech cargo cult</span>
+            </td>
+            <td class="col-project">
+              <span class="project">
+                <span class="project-dot" style="background:#dc2626"></span>Le Charlatan
+              </span>
+            </td>
+            <td class="col-tags"><span class="tag">writing</span></td>
+            <td class="col-time">20:00 – 22:30</td>
+            <td class="col-duration">2:30:00</td>
+            <td class="col-actions">
+              <span class="row-actions">
+                <a href="#">edit</a>
+                <a href="#" class="del" onclick="showConfirm(this,event)">delete</a>
+              </span>
+              <span class="inline-confirm">
+                Sure? <button class="yes">Delete</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+              </span>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="col-description">
+              <span class="entry-description">pgvector indexing — Graphiti integration</span>
+            </td>
+            <td class="col-project">
+              <span class="project">
+                <span class="project-dot" style="background:#059669"></span>memex
+              </span>
+            </td>
+            <td class="col-tags"><span class="tag">pg</span> <span class="tag">ai</span></td>
+            <td class="col-time">14:00 – 17:00</td>
+            <td class="col-duration">3:00:00</td>
+            <td class="col-actions">
+              <span class="row-actions">
+                <a href="#">edit</a>
+                <a href="#" class="del" onclick="showConfirm(this,event)">delete</a>
+              </span>
+              <span class="inline-confirm">
+                Sure? <button class="yes">Delete</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+              </span>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Jour : Samedi -->
+    <div class="day-group">
+      <div class="day-header">
+        <span class="day-label">Saturday, July 5</span>
+        <span class="day-total">1h 58m</span>
+      </div>
+      <table>
+        <tbody>
+          <tr>
+            <td class="col-description">
+              <span class="entry-description">CoreOS LUKS — systemd-cryptenroll migration</span>
+            </td>
+            <td class="col-project">
+              <span class="project">
+                <span class="project-dot" style="background:#7c3aed"></span>Homelab
+              </span>
+            </td>
+            <td class="col-tags"><span class="tag">infra</span></td>
+            <td class="col-time">10:15 – 12:13</td>
+            <td class="col-duration">1:58:00</td>
+            <td class="col-actions">
+              <span class="row-actions">
+                <a href="#">edit</a>
+                <a href="#" class="del" onclick="showConfirm(this,event)">delete</a>
+              </span>
+              <span class="inline-confirm">
+                Sure? <button class="yes">Delete</button><button class="no" onclick="hideConfirm(this)">Cancel</button>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <nav class="pagination">
+      <span style="color:var(--text-muted)">« First</span>
+      <span style="color:var(--text-muted)">‹ Prev</span>
+      <span class="sep">|</span>
+      <a href="#">Next ›</a>
+      <a href="#">Last »</a>
+      <span class="info">Showing Jul 5–7 · <a href="#">export CSV</a></span>
+    </nav>
+
+  </main>
+
+  <footer>
+    <a href="/docs">Documentation</a> ·
+    <a href="/about">About</a> ·
+    <a href="/status">Status</a>
+  </footer>
+
+  <script>
+    // Timer running
+    let s = 5025
+    setInterval(() => {
+      s++
+      const h = String(Math.floor(s/3600)).padStart(2,'0')
+      const m = String(Math.floor((s%3600)/60)).padStart(2,'0')
+      const sec = String(s%60).padStart(2,'0')
+      document.getElementById('timer').textContent = `${h}:${m}:${sec}`
+    }, 1000)
+
+    // Inline confirm
+    function showConfirm(link, e) {
+      e.preventDefault()
+      const td = link.closest('td')
+      td.querySelector('.row-actions').style.display = 'none'
+      td.querySelector('.inline-confirm').classList.add('visible')
+    }
+
+    function hideConfirm(btn) {
+      const td = btn.closest('td')
+      td.querySelector('.row-actions').style.display = ''
+      td.querySelector('.inline-confirm').classList.remove('visible')
+    }
+  </script>
+
+</body>
+</html>
