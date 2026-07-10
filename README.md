@@ -149,6 +149,11 @@ Quelques malentendus à clarifier :
 
 ---
 
+## Ressources du skill
+
+- `references/` — pages HTML statiques illustrant les patterns du skill (`login.html`, `signup.html`, `forgot-password.html`, `profile.html`, `users.html`, `time-entries.html`, `admin-settings.html`, `admin-users.html`)
+- `examples/chefchef-theme/` — implémentation SvelteKit 5 + UnoCSS des mêmes écrans
+
 ## Références et lectures
 
 - [The Website Obesity Crisis](https://idlewords.com/talks/website_obesity.htm) — Maciej Cegłowski (2015) — Le texte fondateur

@@ -224,7 +224,7 @@ L'approche correcte : la page de connexion est une page normale dans le flux du 
 
 Détails clés : `autofocus` sur le premier champ (le seul geste UX « actif » de la page). `max-width: 340px` sur le formulaire, pas sur une card wrapper. Pas de checkbox « Remember me » — c'est le comportement par défaut. Pas de lien « Create account » si l'app est self-hosted sans inscription publique.
 
-Voir `references/login.html` pour un exemple complet fonctionnel.
+Voir les pages dans `references/` (`login.html`, `signup.html`, `forgot-password.html`, `profile.html`, `users.html`, `time-entries.html`, `admin-settings.html`, `admin-users.html`) pour des exemples complets fonctionnels.
 
 ### Statuts / Badges
 
@@ -415,7 +415,8 @@ footer { border-top: 1px solid var(--border); padding: 12px 0; font-size: 13px; 
 - **Pas d'imports d'animation**.
 - SSR / server components par défaut.
 - `<table>` est un élément Svelte/React valide. L'utiliser pour les données tabulaires sans culpabilité.
-- Les composants se justifient par un **comportement répété**, pas par un markup répété. Un `<DataTable>` avec 15 props est du HTML inline qui est devenu trop ambitieux. Voir `references/react-patterns.md`.
+- Les composants se justifient par un **comportement répété**, pas par un markup répété. Un `<DataTable>` avec 15 props est du HTML inline qui est devenu trop ambitieux.
+- `examples/chefchef-theme/` — implémentation SvelteKit 5 + UnoCSS des mêmes écrans que `references/`.
 
 ---
 
