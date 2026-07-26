@@ -27,3 +27,10 @@
     <li><a href="/admin/settings/" class="text-blue-600 hover:underline">Settings</a></li>
   </ul>
 </div>
+
+<div class="mb-6">
+  <h2 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Error pages</h2>
+  <ul class="text-sm space-y-1">
+    <li><a href="/this-page-does-not-exist/" class="text-blue-600 hover:underline">404 — Page not found</a></li>
+  </ul>
+</div>

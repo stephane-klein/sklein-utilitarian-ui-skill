@@ -249,6 +249,65 @@ Discrets, pas néon. Basés sur du texte, pas uniquement sur des icônes.
 
 Pas d'illustrations. Pas de copie « Start your journey! ».
 
+### Error pages
+
+Les pages d'erreur suivent le même flux de document que le reste de l'application : header, main, footer. Pas de centrage vertical, pas d'illustration, pas de branding « désolé ».
+
+```html
+<header>
+  <a href="/">AppName</a>
+  <nav>
+    <a href="/dashboard">Dashboard</a> ·
+    <a href="/settings">Settings</a>
+  </nav>
+</header>
+
+<main>
+  <p class="error-code">404</p>
+  <h1>Page not found</h1>
+  <p class="error-desc">This page doesn't exist or has been moved.</p>
+  <div class="error-actions">
+    <a href="/" class="btn">Go to dashboard</a>
+    <a href="javascript:history.back()" class="btn btn-ghost">Go back</a>
+  </div>
+</main>
+
+<footer>
+  <a href="/docs">Documentation</a> ·
+  <a href="/status">Status</a>
+</footer>
+```
+
+```css
+.error-code { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
+.error-code.is-danger { color: var(--danger); }
+.error-desc { font-size: 15px; color: var(--text-muted); margin-bottom: 24px; max-width: 480px; }
+.error-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+```
+
+**Variantes par code :**
+
+| Code | Badge | Comportement |
+|------|-------|-------------|
+| 404 | `error-code` | Navigation normale. Actions : dashboard + go back. |
+| 403 | `error-code is-danger` | Navigation normale. Action : dashboard + contact admin. |
+| 500 | `error-code is-danger` | Navigation normale. Actions : reload + dashboard + status. Détails techniques dans `<details>`. |
+| 503 | `error-code` | **Page isolée** — pas de header ni footer. Affiche la fenêtre de maintenance avec créneaux horaires. |
+
+Les détails techniques (500 uniquement) utilisent `<details>` :
+
+```html
+<details>
+  <summary>Technical details</summary>
+  <pre>Error ID : a3f9c2d1-8b4e-4f12-9c7a-e6d0b5f1a8c3
+Timestamp: 2025-07-07T14:23:01Z
+Path     : /api/entries/sync
+Message  : pq: connection refused (postgresql://localhost:5432)</pre>
+</details>
+```
+
+Voir `references/error.html` pour la page de démonstration interactive et `examples/chefchef-theme/src/routes/+error.svelte` pour l'implémentation SvelteKit 5.
+
 ### Pagination
 
 ```html
